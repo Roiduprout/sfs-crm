@@ -62,46 +62,24 @@ ipcMain.handle('get-notif-settings', () => readJSON(settingsPath(), {}));
 ipcMain.handle('save-notif-settings', (_, settings) => writeJSON(settingsPath(), settings));
 
 // ---------- SEND NOTIFICATIONS ----------
-ipcMain.handle('send-notifs', (_, items) => {
-  if (!Notification.isSupported()) return;
+// throttle : une notif max toutes les 3h par modèle
+ipcMain.handle('send-notifs', (_, { lines, models }) => {
+  if (!Notification.isSupported() || !lines?.length) return;
 
-  const today = new Date().toISOString().slice(0, 10);
-  const nd = readJSON(notifDataPath(), { acknowledged: [], shownToday: { date: '', keys: [] } });
+  const THREE_HOURS = 3 * 60 * 60 * 1000;
+  const now = Date.now();
+  const nd = readJSON(notifDataPath(), { lastSentAt: {} });
 
-  if (nd.shownToday.date !== today) {
-    nd.shownToday = { date: today, keys: [] };
-  }
+  for (const { model, body } of models) {
+    const last = nd.lastSentAt[model] || 0;
+    if (now - last < THREE_HOURS) continue;
 
-  let sent = 0;
+    new Notification({
+      title: `SFS CRM — ${model}`,
+      body
+    }).show();
 
-  for (const item of items) {
-    if (sent >= 3) break;
-
-    const key = `${item.model}_${item.dateKey}`;
-    if (nd.acknowledged.includes(key)) continue;
-    if (nd.shownToday.keys.includes(key)) continue;
-
-    const notif = new Notification({
-      title: `SFS CRM — ${item.model}`,
-      body: `Tu as trouvé 2 SFS pour le ${item.dateLabel} ?`,
-      actions: [
-        { type: 'button', text: 'Oui ✓' },
-        { type: 'button', text: 'Non' }
-      ],
-      closeButtonText: 'Fermer'
-    });
-
-    notif.on('action', (_, index) => {
-      if (index === 0) {
-        const nd2 = readJSON(notifDataPath(), { acknowledged: [], shownToday: { date: '', keys: [] } });
-        if (!nd2.acknowledged.includes(key)) nd2.acknowledged.push(key);
-        writeJSON(notifDataPath(), nd2);
-      }
-    });
-
-    notif.show();
-    nd.shownToday.keys.push(key);
-    sent++;
+    nd.lastSentAt[model] = now;
   }
 
   writeJSON(notifDataPath(), nd);

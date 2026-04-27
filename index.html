@@ -749,7 +749,7 @@
 <div class="toast" id="toast">Sauvegardé</div>
 
 <script>
-const APP_VERSION = "1.4.0";
+const APP_VERSION = "1.4.1";
 
 const MODELS = {
   'Juliette': { color: '#93c5fd', border: '#3b82f6', bg: 'rgba(59,130,246,0.15)', cls: 'ev-juliette' },
@@ -1311,15 +1311,17 @@ async function checkAndSendNotifications() {
   if (!activeModels.length) return;
 
   const today = new Date(); today.setHours(0,0,0,0);
-  const items = [];
+  const lines = [];
+  const models = [];
 
-  for (let i = 0; i <= 13; i++) {
-    const d = new Date(today);
-    d.setDate(today.getDate() + i);
-    const dateKey = d.toISOString().slice(0,10);
-    const dateLabel = d.toLocaleDateString('fr-FR', { day:'numeric', month:'long' });
+  for (const model of activeModels) {
+    const dayLines = [];
 
-    for (const model of activeModels) {
+    for (let i = 1; i <= 3; i++) {
+      const d = new Date(today);
+      d.setDate(today.getDate() + i);
+      d.setHours(0,0,0,0);
+
       const count = data.filter(r => {
         if (r.monModele !== model) return false;
         const dt = parseDate(r.date);
@@ -1327,11 +1329,22 @@ async function checkAndSendNotifications() {
         dt.setHours(0,0,0,0);
         return dt.getTime() === d.getTime();
       }).length;
-      if (count < 2) items.push({ model, dateKey, dateLabel });
+
+      const jLabel = i === 1 ? 'Demain' : i === 2 ? 'Après-dem' : 'J+3';
+      const dateStr = d.toLocaleDateString('fr-FR', { day:'numeric', month:'short' });
+      const done = count >= 2;
+      dayLines.push(`${count} SFS · ${jLabel} ${dateStr}${done ? ' ✅' : ''}`);
+    }
+
+    const hasIssue = dayLines.some(l => !l.includes('✅'));
+    if (hasIssue) {
+      const body = dayLines.join('\n');
+      lines.push(body);
+      models.push({ model, body });
     }
   }
 
-  if (items.length) await window.electronAPI.sendNotifs(items);
+  if (models.length) await window.electronAPI.sendNotifs({ lines, models });
 }
 
 document.getElementById('settings-modal').addEventListener('click', e => {
@@ -1342,6 +1355,7 @@ document.getElementById('settings-modal').addEventListener('click', e => {
 loadData();
 render();
 checkAndSendNotifications();
+setInterval(checkAndSendNotifications, 3 * 60 * 60 * 1000);
 
 // Live preview dans le modal
 function updateFormPreview() {
