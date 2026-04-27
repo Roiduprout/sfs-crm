@@ -1,0 +1,27 @@
+{
+  "name": "sfs-crm",
+  "version": "1.1.0",
+  "description": "SFS CRM — OFM Tracking",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --mac --dir",
+    "dist": "electron-builder --mac"
+  },
+  "build": {
+    "appId": "com.ofm.sfs-crm",
+    "productName": "SFS CRM",
+    "asar": false,
+    "mac": {
+      "category": "public.app-category.productivity",
+      "extendInfo": { "NSUserNotificationAlertStyle": "alert" },
+      "target": [{ "target": "dmg", "arch": ["arm64", "x64"] }]
+    },
+    "files": ["index.html", "version.json", "main.js", "preload.js"],
+    "directories": { "output": "dist" }
+  },
+  "devDependencies": {
+    "electron": "^35.2.0",
+    "electron-builder": "^26.0.12"
+  }
+}

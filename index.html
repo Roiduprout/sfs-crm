@@ -559,10 +559,11 @@
     <div class="logo-mark">S</div>
     <div>
       <h1>SFS <em>CRM</em></h1>
-      <div class="header-meta">OFM Tracking System · v1.3.0</div>
+      <div class="header-meta">OFM Tracking System · v1.4.0</div>
     </div>
   </div>
   <div class="header-actions">
+    <button class="btn btn-icon" onclick="openSettings()" title="Notifications">🔔</button>
     <button class="btn" onclick="importCSV()">↓ Importer CSV</button>
     <button class="btn" onclick="exportCSV()">↑ Exporter CSV</button>
     <button class="btn-primary btn" onclick="openModal()">+ Nouveau SFS</button>
@@ -696,10 +697,59 @@
   </div>
 </div>
 
+<!-- SETTINGS MODAL -->
+<div class="modal-bg" id="settings-modal">
+  <div class="modal" style="max-width:420px">
+    <h2>Notifications <em>SFS</em></h2>
+    <div class="form-body" style="gap:20px">
+      <p style="color:var(--text-mute);font-size:13px;line-height:1.6">
+        Reçois une alerte macOS pour chaque date des 14 prochains jours ayant moins de 2 SFS par modèle actif.
+      </p>
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <label style="display:flex;align-items:center;gap:14px;cursor:pointer;padding:14px 16px;border:1px solid var(--line);background:var(--bg-2)">
+          <div style="position:relative;width:44px;height:24px;flex-shrink:0">
+            <input type="checkbox" id="notif-juliette" style="opacity:0;width:0;height:0;position:absolute" onchange="updateToggleUI('juliette')">
+            <div id="toggle-juliette" style="position:absolute;inset:0;background:var(--line-2);border-radius:12px;transition:background 0.2s;cursor:pointer" onclick="document.getElementById('notif-juliette').click()">
+              <div id="thumb-juliette" style="position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:transform 0.2s"></div>
+            </div>
+          </div>
+          <div>
+            <div style="display:flex;align-items:center;gap:8px;font-weight:600;font-size:14px">
+              <span class="model-dot" style="background:#3b82f6;width:10px;height:10px"></span>Juliette
+            </div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-mute);letter-spacing:0.06em;text-transform:uppercase;margin-top:3px">Notifications activées</div>
+          </div>
+        </label>
+        <label style="display:flex;align-items:center;gap:14px;cursor:pointer;padding:14px 16px;border:1px solid var(--line);background:var(--bg-2)">
+          <div style="position:relative;width:44px;height:24px;flex-shrink:0">
+            <input type="checkbox" id="notif-camille" style="opacity:0;width:0;height:0;position:absolute" onchange="updateToggleUI('camille')">
+            <div id="toggle-camille" style="position:absolute;inset:0;background:var(--line-2);border-radius:12px;transition:background 0.2s;cursor:pointer" onclick="document.getElementById('notif-camille').click()">
+              <div id="thumb-camille" style="position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:transform 0.2s"></div>
+            </div>
+          </div>
+          <div>
+            <div style="display:flex;align-items:center;gap:8px;font-weight:600;font-size:14px">
+              <span class="model-dot" style="background:#7c3aed;width:10px;height:10px"></span>Camille
+            </div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-mute);letter-spacing:0.06em;text-transform:uppercase;margin-top:3px">Notifications activées</div>
+          </div>
+        </label>
+      </div>
+      <p style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-mute);letter-spacing:0.06em;text-transform:uppercase;border-top:1px solid var(--line);padding-top:14px">
+        Les notifications apparaissent au lancement de l'app · Max 3 par session
+      </p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" onclick="closeSettings()">Annuler</button>
+      <button class="btn btn-primary" onclick="saveSettings()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast">Sauvegardé</div>
 
 <script>
-const APP_VERSION = "1.3.0";
+const APP_VERSION = "1.4.0";
 
 const MODELS = {
   'Juliette': { color: '#93c5fd', border: '#3b82f6', bg: 'rgba(59,130,246,0.15)', cls: 'ev-juliette' },
@@ -1217,9 +1267,81 @@ function parseCSV(text) {
   return rows;
 }
 
+// ---------- SETTINGS & NOTIFICATIONS ----------
+function updateToggleUI(model) {
+  const checked = document.getElementById('notif-' + model).checked;
+  const color = model === 'juliette' ? '#3b82f6' : '#7c3aed';
+  document.getElementById('toggle-' + model).style.background = checked ? color : 'var(--line-2)';
+  document.getElementById('thumb-' + model).style.transform = checked ? 'translateX(20px)' : 'translateX(0)';
+}
+
+async function openSettings() {
+  document.getElementById('settings-modal').classList.add('show');
+  if (window.electronAPI) {
+    const s = await window.electronAPI.getNotifSettings();
+    ['juliette','camille'].forEach(m => {
+      const key = m.charAt(0).toUpperCase() + m.slice(1);
+      document.getElementById('notif-' + m).checked = s[key] === true;
+      updateToggleUI(m);
+    });
+  }
+}
+
+function closeSettings() {
+  document.getElementById('settings-modal').classList.remove('show');
+}
+
+async function saveSettings() {
+  if (window.electronAPI) {
+    const s = {
+      Juliette: document.getElementById('notif-juliette').checked,
+      Camille:  document.getElementById('notif-camille').checked,
+    };
+    await window.electronAPI.saveNotifSettings(s);
+    toast('Paramètres sauvegardés ✓');
+    checkAndSendNotifications();
+  }
+  closeSettings();
+}
+
+async function checkAndSendNotifications() {
+  if (!window.electronAPI?.sendNotifs) return;
+  const settings = await window.electronAPI.getNotifSettings();
+  const activeModels = Object.keys(MODELS).filter(m => settings[m] === true);
+  if (!activeModels.length) return;
+
+  const today = new Date(); today.setHours(0,0,0,0);
+  const items = [];
+
+  for (let i = 0; i <= 13; i++) {
+    const d = new Date(today);
+    d.setDate(today.getDate() + i);
+    const dateKey = d.toISOString().slice(0,10);
+    const dateLabel = d.toLocaleDateString('fr-FR', { day:'numeric', month:'long' });
+
+    for (const model of activeModels) {
+      const count = data.filter(r => {
+        if (r.monModele !== model) return false;
+        const dt = parseDate(r.date);
+        if (!dt) return false;
+        dt.setHours(0,0,0,0);
+        return dt.getTime() === d.getTime();
+      }).length;
+      if (count < 2) items.push({ model, dateKey, dateLabel });
+    }
+  }
+
+  if (items.length) await window.electronAPI.sendNotifs(items);
+}
+
+document.getElementById('settings-modal').addEventListener('click', e => {
+  if (e.target.id === 'settings-modal') closeSettings();
+});
+
 // ---------- INIT ----------
 loadData();
 render();
+checkAndSendNotifications();
 
 // Live preview dans le modal
 function updateFormPreview() {
