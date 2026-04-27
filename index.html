@@ -1189,6 +1189,20 @@ document.addEventListener('keydown', e => {
 });
 
 // ---------- AUTO-UPDATE ----------
+function doUpdateApp() {
+  var btn = document.getElementById('update-link');
+  btn.textContent = 'Mise à jour…';
+  btn.disabled = true;
+  if (window.electronAPI) {
+    window.electronAPI.doUpdate().catch(function() {
+      btn.textContent = 'Erreur — réessayer';
+      btn.disabled = false;
+    });
+  } else {
+    window.open('https://Roiduprout.github.io/sfs-crm/', '_blank');
+  }
+}
+
 (function() {
   function parseVer(v) { return String(v).split('.').map(Number); }
   function isNewer(remote, local) {
@@ -1208,7 +1222,6 @@ document.addEventListener('keydown', e => {
         var msg = 'Mise à jour disponible (v' + info.version + ')';
         if (info.changelog) msg += ' — ' + info.changelog;
         document.getElementById('update-text').textContent = msg;
-        document.getElementById('update-link').href = 'https://Roiduprout.github.io/sfs-crm/';
         banner.style.display = 'flex';
       }
     })
@@ -1219,7 +1232,7 @@ document.addEventListener('keydown', e => {
 <div id="update-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:9999;background:#111111;border-top:1px solid #262626;padding:12px 24px;align-items:center;justify-content:space-between;gap:16px;">
   <span id="update-text" style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#a3a3a3;text-transform:uppercase;letter-spacing:0.08em;"></span>
   <div style="display:flex;gap:8px;align-items:center;flex-shrink:0;">
-    <a id="update-link" href="#" target="_blank" style="background:#d4ff2a;color:#000;padding:7px 16px;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:11px;text-decoration:none;letter-spacing:0.08em;text-transform:uppercase;display:inline-block;">Mettre à jour</a>
+    <button id="update-link" onclick="doUpdateApp()" style="background:#d4ff2a;color:#000;padding:7px 16px;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:11px;border:none;cursor:pointer;letter-spacing:0.08em;text-transform:uppercase;">Mettre à jour</button>
     <button onclick="document.getElementById('update-banner').style.display='none'" style="background:transparent;border:1px solid #262626;color:#666666;padding:7px 10px;cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1;">✕</button>
   </div>
 </div>
