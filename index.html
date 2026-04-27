@@ -245,64 +245,78 @@
   }
   .cal-dayname {
     background: var(--bg-1);
-    padding: 10px 12px;
+    padding: 12px;
     font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
-    color: var(--text-mute);
+    font-size: 11px;
+    color: var(--text-dim);
     letter-spacing: 0.1em;
     text-transform: uppercase;
     text-align: center;
+    font-weight: 600;
   }
   .cal-day {
     background: var(--bg);
-    min-height: 110px;
-    padding: 8px 10px;
+    min-height: 150px;
+    padding: 10px 12px;
     position: relative;
     cursor: pointer;
     transition: background 0.12s;
     display: flex; flex-direction: column;
   }
   .cal-day:hover { background: var(--bg-1); }
-  .cal-day.other { background: var(--bg-1); opacity: 0.4; }
-  .cal-day.today { background: rgba(212,255,42,0.04); }
-  .cal-day.today .cal-day-num { color: var(--accent); font-weight: 700; }
+  .cal-day.other { background: var(--bg-1); opacity: 0.35; pointer-events: none; }
+  .cal-day.today { background: rgba(212,255,42,0.05); border: 1px solid rgba(212,255,42,0.2); }
+  .cal-day.today .cal-day-num {
+    color: var(--accent); font-weight: 800;
+    background: rgba(212,255,42,0.15);
+    width: 28px; height: 28px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 50%;
+    margin-bottom: 8px;
+  }
   .cal-day-num {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 14px;
-    font-weight: 500;
+    font-size: 16px;
+    font-weight: 600;
     color: var(--text-dim);
-    margin-bottom: 6px;
+    margin-bottom: 8px;
   }
-  .cal-events { display: flex; flex-direction: column; gap: 3px; }
+  .cal-events { display: flex; flex-direction: column; gap: 4px; }
   .cal-event {
-    font-size: 10px;
-    padding: 3px 6px;
-    font-family: 'JetBrains Mono', monospace;
-    letter-spacing: 0.02em;
+    font-size: 11px;
+    padding: 5px 8px;
+    font-family: 'Inter Tight', sans-serif;
+    font-weight: 500;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    border-left: 2px solid;
+    border-left: 3px solid;
+    border-radius: 0 3px 3px 0;
+    cursor: pointer;
+    transition: filter 0.1s;
   }
-  .cal-event.ev-prog { background: rgba(255,170,51,0.1); color: var(--warn); border-color: var(--warn); }
-  .cal-event.ev-done { background: rgba(74,222,128,0.1); color: var(--ok); border-color: var(--ok); }
-  .cal-event.ev-none { background: var(--bg-2); color: var(--text-dim); border-color: var(--text-mute); }
+  .cal-event:hover { filter: brightness(1.2); }
+  .cal-event b { font-weight: 700; }
+  .cal-event.ev-prog { background: rgba(255,170,51,0.15); color: #ffc46b; border-color: var(--warn); }
+  .cal-event.ev-done { background: rgba(74,222,128,0.15); color: #6ee7a0; border-color: var(--ok); }
+  .cal-event.ev-none { background: var(--bg-2); color: var(--text-dim); border-color: var(--line-2); }
   .cal-legend {
-    display: flex; gap: 18px; margin-top: 18px;
+    display: flex; gap: 20px; margin-top: 20px;
     font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
+    font-size: 11px;
     color: var(--text-mute);
-    letter-spacing: 0.08em;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
+    align-items: center;
   }
-  .cal-legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .cal-legend span { display: inline-flex; align-items: center; gap: 7px; }
   .cal-legend i {
-    width: 10px; height: 10px; display: inline-block;
-    border-left: 2px solid;
+    width: 12px; height: 12px; display: inline-block;
+    border-left: 3px solid; border-radius: 0 2px 2px 0;
   }
   .cal-legend .lg-prog { background: rgba(255,170,51,0.2); border-color: var(--warn); }
   .cal-legend .lg-done { background: rgba(74,222,128,0.2); border-color: var(--ok); }
-  .cal-legend .lg-none { background: var(--bg-2); border-color: var(--text-mute); }
+  .cal-legend .lg-none { background: var(--bg-2); border-color: var(--line-2); }
 
   /* TABLE */
   .table-wrap {
@@ -520,8 +534,8 @@
   .toast.show { transform: translateY(0); opacity: 1; }
 
   /* MODEL COLORS */
-  .cal-event.ev-juliette { background: rgba(59,130,246,0.15); color: #93c5fd; border-color: #3b82f6; }
-  .cal-event.ev-camille  { background: rgba(139,92,246,0.15); color: #c4b5fd; border-color: #7c3aed; }
+  .cal-event.ev-juliette { background: rgba(59,130,246,0.22); color: #bfdbfe; border-color: #60a5fa; }
+  .cal-event.ev-camille  { background: rgba(139,92,246,0.22); color: #ddd6fe; border-color: #a78bfa; }
   .model-dot {
     display: inline-block; width: 8px; height: 8px;
     border-radius: 50%; margin-right: 5px; flex-shrink: 0; vertical-align: middle;
