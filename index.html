@@ -703,13 +703,13 @@
     <h2>Notifications <em>SFS</em></h2>
     <div class="form-body" style="gap:20px">
       <p style="color:var(--text-mute);font-size:13px;line-height:1.6">
-        Reçois une alerte macOS pour chaque date des 14 prochains jours ayant moins de 2 SFS par modèle actif.
+        Reçois une alerte macOS pour les 3 prochains jours ayant moins de 2 SFS par modèle actif. Rappel toutes les 3h.
       </p>
       <div style="display:flex;flex-direction:column;gap:14px">
         <label style="display:flex;align-items:center;gap:14px;cursor:pointer;padding:14px 16px;border:1px solid var(--line);background:var(--bg-2)">
           <div style="position:relative;width:44px;height:24px;flex-shrink:0">
             <input type="checkbox" id="notif-juliette" style="opacity:0;width:0;height:0;position:absolute" onchange="updateToggleUI('juliette')">
-            <div id="toggle-juliette" style="position:absolute;inset:0;background:var(--line-2);border-radius:12px;transition:background 0.2s;cursor:pointer" onclick="document.getElementById('notif-juliette').click()">
+            <div id="toggle-juliette" style="position:absolute;inset:0;background:var(--line-2);border-radius:12px;transition:background 0.2s;cursor:pointer">
               <div id="thumb-juliette" style="position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:transform 0.2s"></div>
             </div>
           </div>
@@ -723,7 +723,7 @@
         <label style="display:flex;align-items:center;gap:14px;cursor:pointer;padding:14px 16px;border:1px solid var(--line);background:var(--bg-2)">
           <div style="position:relative;width:44px;height:24px;flex-shrink:0">
             <input type="checkbox" id="notif-camille" style="opacity:0;width:0;height:0;position:absolute" onchange="updateToggleUI('camille')">
-            <div id="toggle-camille" style="position:absolute;inset:0;background:var(--line-2);border-radius:12px;transition:background 0.2s;cursor:pointer" onclick="document.getElementById('notif-camille').click()">
+            <div id="toggle-camille" style="position:absolute;inset:0;background:var(--line-2);border-radius:12px;transition:background 0.2s;cursor:pointer">
               <div id="thumb-camille" style="position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:transform 0.2s"></div>
             </div>
           </div>
