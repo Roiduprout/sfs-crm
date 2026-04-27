@@ -43,7 +43,7 @@ ipcMain.handle('do-update', async () => {
   });
 
   const win = BrowserWindow.getAllWindows()[0];
-  if (win) win.loadFile(filePath);
+  if (win) win.webContents.reloadIgnoringCache();
 });
 
 app.whenReady().then(createWindow);
