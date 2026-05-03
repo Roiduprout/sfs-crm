@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    background: transparent;
+    font-family: -apple-system, 'Inter Tight', 'Helvetica Neue', sans-serif;
+    width: 400px;
+    overflow: hidden;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .popup {
+    background: #131316;
+    border: 1px solid #3f3f46;
+    border-radius: 16px;
+    overflow: hidden;
+    width: 400px;
+    box-shadow:
+      0 24px 64px rgba(0,0,0,0.85),
+      0 0 0 1px rgba(255,255,255,0.04) inset;
+    animation: slideIn 0.32s cubic-bezier(0.34, 1.46, 0.64, 1);
+  }
+
+  @keyframes slideIn {
+    from { transform: translateX(130%); opacity: 0; }
+    to   { transform: translateX(0);   opacity: 1; }
+  }
+
+  /* ── Shimmer bar ── */
+  .shimmer-bar {
+    height: 3px;
+    background: linear-gradient(90deg,
+      #ff4500 0%, #ff6b00 25%, #ffaa00 50%, #ff6b00 75%, #ff4500 100%
+    );
+    background-size: 300% 100%;
+    animation: shimmer 2.4s linear infinite;
+  }
+  @keyframes shimmer {
+    from { background-position: 300% 0; }
+    to   { background-position: -300% 0; }
+  }
+
+  /* ── Header ── */
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 11px 14px 9px;
+    border-bottom: 1px solid rgba(63,63,70,0.6);
+  }
+  .app-name {
+    font-family: 'SF Mono', 'JetBrains Mono', 'Menlo', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    color: #ff6b00;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .close-btn {
+    width: 22px; height: 22px;
+    background: rgba(63,63,70,0.5);
+    border: 1px solid rgba(63,63,70,0.8);
+    border-radius: 50%;
+    color: #71717a;
+    font-size: 14px;
+    line-height: 1;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+  }
+  .close-btn:hover {
+    background: rgba(255,107,0,0.18);
+    border-color: rgba(255,107,0,0.4);
+    color: #ff6b00;
+  }
+
+  /* ── Content ── */
+  .content {
+    padding: 12px 14px 10px;
+    cursor: pointer;
+  }
+  .title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #f4f4f5;
+    margin-bottom: 11px;
+    letter-spacing: -0.01em;
+  }
+
+  /* ── Model block ── */
+  .model-block { margin-bottom: 10px; }
+  .model-block:last-child { margin-bottom: 0; }
+
+  .model-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 3px 10px 3px 7px;
+    border-radius: 20px;
+    margin-bottom: 6px;
+  }
+  .model-dot-b {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* ── Day rows ── */
+  .day-rows { display: flex; flex-direction: column; gap: 3px; }
+  .day-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+  .day-row.critical {
+    background: rgba(239,68,68,0.14);
+    border: 1px solid rgba(239,68,68,0.28);
+    color: #fca5a5;
+  }
+  .day-row.warn {
+    background: rgba(245,158,11,0.13);
+    border: 1px solid rgba(245,158,11,0.28);
+    color: #fcd34d;
+  }
+  .day-row.ok {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.05);
+    color: #3f3f46;
+  }
+  .day-count {
+    font-family: 'SF Mono', 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-left: 8px;
+  }
+
+  /* ── Footer ── */
+  .footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 14px 10px;
+    border-top: 1px solid rgba(63,63,70,0.4);
+    margin-top: 2px;
+  }
+  .footer-label {
+    font-family: 'SF Mono', 'Menlo', monospace;
+    font-size: 9px;
+    color: #52525b;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .dots { display: flex; gap: 4px; align-items: center; }
+  .dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: #ff6b00;
+    animation: blink 1.6s ease-in-out infinite;
+  }
+  .dot:nth-child(2) { animation-delay: 0.28s; }
+  .dot:nth-child(3) { animation-delay: 0.56s; }
+  @keyframes blink {
+    0%, 100% { opacity: 0.25; transform: scale(0.8); }
+    50%       { opacity: 1;    transform: scale(1.1); }
+  }
+
+  /* ── Progress bar ── */
+  .progress-wrap {
+    height: 2px;
+    background: rgba(255,107,0,0.18);
+  }
+  .progress-fill {
+    height: 100%;
+    width: 100%;
+    background: linear-gradient(90deg, #ff4500, #ff6b00);
+    transform-origin: left;
+  }
+</style>
+</head>
+<body>
+
+<div class="popup">
+  <div class="shimmer-bar"></div>
+
+  <div class="header">
+    <span class="app-name">■ SFS.CRM</span>
+    <button class="close-btn" id="close-btn">×</button>
+  </div>
+
+  <div class="content" id="content">
+    <div class="title">Planning SFS — Rappel</div>
+    <div id="models-container"></div>
+  </div>
+
+  <div class="footer">
+    <span class="footer-label">Cliquer pour ouvrir</span>
+    <div class="dots">
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+    </div>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-fill" id="progress-fill"></div>
+  </div>
+</div>
+
+<script>
+const MODEL_STYLES = {
+  Juliette: { bg: 'rgba(59,130,246,0.2)',  color: '#93c5fd', dot: '#3b82f6' },
+  Camille:  { bg: 'rgba(139,92,246,0.2)',  color: '#c4b5fd', dot: '#7c3aed' },
+};
+
+function parseData() {
+  try {
+    const p = new URLSearchParams(window.location.search);
+    return JSON.parse(decodeURIComponent(p.get('d') || '{}'));
+  } catch { return {}; }
+}
+
+function render(data) {
+  const container = document.getElementById('models-container');
+  if (!data.models?.length) return;
+
+  container.innerHTML = data.models.map(m => {
+    const s = MODEL_STYLES[m.name] || { bg: 'rgba(255,107,0,0.15)', color: '#ff6b00', dot: '#ff6b00' };
+
+    const daysHTML = m.days.map(day => {
+      const cls  = day.count === 0 ? 'critical' : day.count === 1 ? 'warn' : 'ok';
+      const cnt  = day.count >= 2 ? '✅ 2/2' : `${day.count}/2`;
+      return `<div class="day-row ${cls}">
+        <span>${day.label}</span>
+        <span class="day-count">${cnt}</span>
+      </div>`;
+    }).join('');
+
+    return `<div class="model-block">
+      <div class="model-badge" style="background:${s.bg};color:${s.color}">
+        <span class="model-dot-b" style="background:${s.dot}"></span>${m.name}
+      </div>
+      <div class="day-rows">${daysHTML}</div>
+    </div>`;
+  }).join('');
+}
+
+function closePopup() {
+  if (window.notifAPI) window.notifAPI.close();
+  else window.close();
+}
+
+const DURATION = 10000;
+
+function startTimer() {
+  const fill = document.getElementById('progress-fill');
+  fill.style.transition = `width ${DURATION}ms linear`;
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    fill.style.width = '0%';
+  }));
+  setTimeout(closePopup, DURATION);
+}
+
+// ── Init ──
+const data = parseData();
+render(data);
+startTimer();
+
+document.getElementById('content').addEventListener('click', () => {
+  if (window.notifAPI) window.notifAPI.openApp();
+  else window.close();
+});
+
+document.getElementById('close-btn').addEventListener('click', e => {
+  e.stopPropagation();
+  closePopup();
+});
+</script>
+</body>
+</html>

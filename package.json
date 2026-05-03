@@ -17,7 +17,7 @@
       "extendInfo": { "NSUserNotificationAlertStyle": "alert" },
       "target": [{ "target": "dmg", "arch": ["arm64", "x64"] }]
     },
-    "files": ["index.html", "version.json", "main.js", "preload.js"],
+    "files": ["index.html", "notif.html", "version.json", "main.js", "preload.js", "notif-preload.js"],
     "directories": { "output": "dist" }
   },
   "devDependencies": {
